@@ -1,28 +1,35 @@
 import { Request, Response, NextFunction } from "express";
-
 import AppError from "../errors/AppError";
 import Whatsapp from "../models/Whatsapp";
 
-type HeaderParams = {
-  Bearer: string;
-};
+const tokenAuth = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  // Verificar se o cabeçalho Authorization está presente e começa com "Bearer "
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    throw new AppError("Token de acesso não fornecido", 401);
+  }
 
-const tokenAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  // Extrair o token do cabeçalho Authorization
+  const token = authHeader.replace("Bearer ", "");
+
   try {
-    const token = req.headers.authorization.replace('Bearer ', '');
+    // Procurar pelo Whatsapp associado ao token
     const whatsapp = await Whatsapp.findOne({ where: { token } });
     if (whatsapp) {
+      // Se encontrado, anexar o ID do Whatsapp aos parâmetros da requisição
       req.params = {
-        whatsappId: whatsapp.id.toString()
-      }
+        whatsappId: whatsapp.id.toString(),
+      };
     } else {
       throw new Error();
     }
   } catch (err) {
-    throw new AppError(
-      "Acesso não permitido",
-      401
-    );
+    // Em caso de erro ou Whatsapp não encontrado, retornar erro de acesso não permitido
+    throw new AppError("Acesso não permitido", 401);
   }
 
   return next();
