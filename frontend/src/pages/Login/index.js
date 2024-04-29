@@ -138,7 +138,7 @@ const Login = () => {
 								href="#"
 								variant="body2"
 								component={RouterLink}
-								to="/signup"
+								to="https://global.brmarketing.expert/zapcheckin"
 							>
 								{i18n.t("login.buttons.register")}
 							</Link>
