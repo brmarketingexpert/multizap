@@ -12,7 +12,7 @@ interface Request {
 
 const CreateService = async ({
   name,
-  color = "#A4CCCC",
+  color = "#4a4a4a",
   kanban = 0,
   companyId
 }: Request): Promise<Tag> => {
