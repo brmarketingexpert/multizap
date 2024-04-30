@@ -21,113 +21,137 @@ type IndexQuery = {
 };
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
-  const { contactId, userId, pageNumber, searchParam } = req.query as IndexQuery;
-  const { companyId } = req.user;
+  try {
+    const { contactId, userId, pageNumber, searchParam } = req.query as IndexQuery;
+    const { companyId } = req.user;
 
-  const { schedules, count, hasMore } = await ListService({
-    searchParam,
-    contactId,
-    userId,
-    pageNumber,
-    companyId
-  });
+    const { schedules, count, hasMore } = await ListService({
+      searchParam,
+      contactId,
+      userId,
+      pageNumber,
+      companyId
+    });
 
-  return res.json({ schedules, count, hasMore });
+    return res.json({ schedules, count, hasMore });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
-  const {
-    body,
-    sendAt,
-    contactId,
-    userId
-  } = req.body;
-  const { companyId } = req.user;
+  try {
+    const {
+      body,
+      sendAt,
+      contactId,
+      userId
+    } = req.body;
+    const { companyId } = req.user;
 
-  const schedule = await CreateService({
-    body,
-    sendAt,
-    contactId,
-    companyId,
-    userId
-  });
+    const schedule = await CreateService({
+      body,
+      sendAt,
+      contactId,
+      companyId,
+      userId
+    });
 
-  const io = getIO();
-  io.emit("schedule", {
-    action: "create",
-    schedule
-  });
+    const io = getIO();
+    io.emit("schedule", {
+      action: "create",
+      schedule
+    });
 
-  return res.status(200).json(schedule);
+    return res.status(200).json(schedule);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
 };
 
 export const show = async (req: Request, res: Response): Promise<Response> => {
-  const { scheduleId } = req.params;
-  const { companyId } = req.user;
+  try {
+    const { scheduleId } = req.params;
+    const { companyId } = req.user;
 
-  const schedule = await ShowService(scheduleId, companyId);
+    const schedule = await ShowService(scheduleId, companyId);
 
-  return res.status(200).json(schedule);
+    return res.status(200).json(schedule);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
 };
 
 export const update = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  if (req.user.profile !== "admin") {
-    throw new AppError("ERR_NO_PERMISSION", 403);
+  try {
+    if (req.user.profile !== "admin") {
+      throw new AppError("ERR_NO_PERMISSION", 403);
+    }
+
+    const { scheduleId } = req.params;
+    const scheduleData = req.body;
+    const { companyId } = req.user;
+
+    const schedule = await UpdateService({ scheduleData, id: scheduleId, companyId });
+
+    const io = getIO();
+    io.emit("schedule", {
+      action: "update",
+      schedule
+    });
+
+    return res.status(200).json(schedule);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
-
-  const { scheduleId } = req.params;
-  const scheduleData = req.body;
-  const { companyId } = req.user;
-
-  const schedule = await UpdateService({ scheduleData, id: scheduleId, companyId });
-
-  const io = getIO();
-  io.emit("schedule", {
-    action: "update",
-    schedule
-  });
-
-  return res.status(200).json(schedule);
 };
 
 export const remove = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const { scheduleId } = req.params;
-  const { companyId } = req.user;
+  try {
+    const { scheduleId } = req.params;
+    const { companyId } = req.user;
 
-  await DeleteService(scheduleId, companyId);
+    await DeleteService(scheduleId, companyId);
 
-  const io = getIO();
-  io.emit("schedule", {
-    action: "delete",
-    scheduleId
-  });
+    const io = getIO();
+    io.emit("schedule", {
+      action: "delete",
+      scheduleId
+    });
 
-  return res.status(200).json({ message: "Schedule deleted" });
+    return res.status(200).json({ message: "Schedule deleted" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
 };
 
 export const mediaUpload = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const { id } = req.params;
-  const files = req.files as Express.Multer.File[];
-  const file = head(files);
-
   try {
+    const { id } = req.params;
+    const files = req.files as Express.Multer.File[];
+    const file = head(files);
+
     const schedule = await Schedule.findByPk(id);
+    if (!schedule) {
+      throw new AppError("Schedule not found", 404);
+    }
+
     schedule.mediaPath = file.filename;
     schedule.mediaName = file.originalname;
 
     await schedule.save();
     return res.send({ mensagem: "Arquivo Anexado" });
-    } catch (err: any) {
-      throw new AppError(err.message);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -135,20 +159,25 @@ export const deleteMedia = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const { id } = req.params;
-
   try {
+    const { id } = req.params;
+
     const schedule = await Schedule.findByPk(id);
+    if (!schedule) {
+      throw new AppError("Schedule not found", 404);
+    }
+
     const filePath = path.resolve("public", schedule.mediaPath);
     const fileExists = fs.existsSync(filePath);
     if (fileExists) {
       fs.unlinkSync(filePath);
     }
+
     schedule.mediaPath = null;
     schedule.mediaName = null;
     await schedule.save();
     return res.send({ mensagem: "Arquivo Excluído" });
-    } catch (err: any) {
-      throw new AppError(err.message);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
 };
