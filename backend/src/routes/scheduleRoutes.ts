@@ -11,7 +11,7 @@ const scheduleRoutes = express.Router();
 
 scheduleRoutes.get("/schedules", isAuth, ScheduleController.index);
 
-scheduleRoutes.post("/schedules", ScheduleController.store);
+scheduleRoutes.post("/schedules", isAuth, ScheduleController.store);
 
 scheduleRoutes.put("/schedules/:scheduleId", isAuth, ScheduleController.update);
 
