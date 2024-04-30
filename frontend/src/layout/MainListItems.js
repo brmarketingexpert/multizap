@@ -262,7 +262,7 @@ const MainListItems = (props) => {
               }}   
               inset
               color="inherit">
-              {i18n.t("Painel CRM")}
+              {i18n.t("Interações")}
             </ListSubheader>
             <>
               <ListItemLink
@@ -276,14 +276,23 @@ const MainListItems = (props) => {
                 icon={<FlashOnIcon />}
               />
               <ListItemLink
+              to="/queues"
+              primary={i18n.t("mainDrawer.listItems.queues")}
+              icon={<AccountTreeOutlinedIcon />}
+            />
+             <ListItemLink
+              to="/connections"
+              primary={i18n.t("mainDrawer.listItems.connections")}
+              icon={
+                <Badge badgeContent={connectionWarning ? "!" : 0} color="error">
+                  <PhonelinkRingTwoToneIcon />
+                </Badge>
+              }
+            />
+              <ListItemLink
                 to="/contacts"
                 primary={i18n.t("mainDrawer.listItems.contacts")}
                 icon={<ContactPhoneOutlinedIcon />}
-              />
-              <ListItemLink
-                to="/helps"
-                primary={i18n.t("mainDrawer.listItems.helps")}
-                icon={<PlayCircleFilledTwoToneIcon />}
               />
             </>
           </>
@@ -306,7 +315,7 @@ const MainListItems = (props) => {
               }} 
               inset
               color="inherit">
-              {i18n.t("Envios")}
+              {i18n.t("Insights")}
             </ListSubheader>
             <ListItemLink
               small
@@ -314,10 +323,34 @@ const MainListItems = (props) => {
               primary="Dashboard"
               icon={<TrendingUpTwoToneIcon />}
             />
+            <ListItemLink
+                to="/helps"
+                primary={i18n.t("mainDrawer.listItems.helps")}
+                icon={<PlayCircleFilledTwoToneIcon />}
+              />
 
             {showCampaigns && (
               <>
-                <ListItem
+                <ListItemLink
+              to="/tags"
+              primary={i18n.t("mainDrawer.listItems.tags")}
+              icon={<LocalOfferIcon />}
+            />
+              <ListItemLink
+                to="/kanban"
+                primary="Kanban"
+                icon={<GolfCourseTwoToneIcon />}
+              />
+              <ListItemLink
+              to="/schedules"
+              primary={i18n.t("mainDrawer.listItems.schedules")}
+              icon={<EventIcon />}
+            />
+              <ListItemLink
+              to="/prompts"
+              primary={i18n.t("mainDrawer.listItems.prompts")}
+              icon={<AllInclusiveTwoToneIcon />}
+            /><ListItem
                   button
                   onClick={() => setOpenCampaignSubmenu((prev) => !prev)}
                 >
@@ -393,20 +426,6 @@ const MainListItems = (props) => {
                 icon={<AnnouncementIcon />}
               />
             )}
-            <ListItemLink
-              to="/queues"
-              primary={i18n.t("mainDrawer.listItems.queues")}
-              icon={<AccountTreeOutlinedIcon />}
-            />
-            <ListItemLink
-              to="/connections"
-              primary={i18n.t("mainDrawer.listItems.connections")}
-              icon={
-                <Badge badgeContent={connectionWarning ? "!" : 0} color="error">
-                  <PhonelinkRingTwoToneIcon />
-                </Badge>
-              }
-            />
             <ListItemLink
               to="/users"
               primary={i18n.t("mainDrawer.listItems.users")}
