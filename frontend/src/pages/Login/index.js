@@ -135,11 +135,9 @@ const Login = () => {
 					{ <Grid container>
 						<Grid item>
 							<Link
-								href="#"
+								href="https://global.brmarketing.expert/zapcheckin"
 								variant="body2"
-								component={RouterLink}
-								to="https://global.brmarketing.expert/zapcheckin"
-							>
+								>
 								{i18n.t("login.buttons.register")}
 							</Link>
 						</Grid>
