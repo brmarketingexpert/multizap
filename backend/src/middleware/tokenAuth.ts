@@ -1,35 +1,42 @@
 import { Request, Response, NextFunction } from "express";
 import AppError from "../errors/AppError";
 import Whatsapp from "../models/Whatsapp";
+import Ticket from "../models/Ticket"; // Importe o modelo de Ticket
 
-const tokenAuth = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  // Verificar se o cabeçalho Authorization está presente e começa com "Bearer "
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    throw new AppError("Token de acesso não fornecido", 401);
-  }
+type HeaderParams = {
+  Bearer: string;
+};
 
-  // Extrair o token do cabeçalho Authorization
-  const token = authHeader.replace("Bearer ", "");
-
+const tokenAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    // Procurar pelo Whatsapp associado ao token
+    const token = req.headers.authorization.replace('Bearer ', '');
     const whatsapp = await Whatsapp.findOne({ where: { token } });
+
     if (whatsapp) {
-      // Se encontrado, anexar o ID do Whatsapp aos parâmetros da requisição
-      req.params = {
-        whatsappId: whatsapp.id.toString(),
-      };
+      // Recuperar o último ticketId associado a este Whatsapp
+      const lastTicket = await Ticket.findOne({
+        where: { whatsappId: whatsapp.id },
+        order: [['createdAt', 'DESC']] // Ordena pelos tickets mais recentes
+      });
+
+      if (lastTicket) {
+        req.params = {
+          whatsappId: whatsapp.id.toString(),
+          companyId: whatsapp.companyId.toString(), // Supondo que companyId esteja disponível no modelo Whatsapp
+          lastTicketId: lastTicket.id.toString(),
+          // Adicione outras chaves estrangeiras, se necessário
+        }
+      } else {
+        throw new Error("Não foi encontrado nenhum ticket associado a este Whatsapp.");
+      }
     } else {
-      throw new Error();
+      throw new Error("Whatsapp não encontrado.");
     }
   } catch (err) {
-    // Em caso de erro ou Whatsapp não encontrado, retornar erro de acesso não permitido
-    throw new AppError("Acesso não permitido", 401);
+    throw new AppError(
+      "Acesso não permitido",
+      401
+    );
   }
 
   return next();
