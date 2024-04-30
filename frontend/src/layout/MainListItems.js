@@ -331,6 +331,19 @@ const MainListItems = (props) => {
 
             {showCampaigns && (
               <>
+   <Divider/>
+            <ListSubheader 
+              hidden={collapsed}
+              style={{
+                position:"relative",
+                fontSize: "17px",
+                textAlign: "left",
+                paddingLeft: 20
+              }} 
+              inset
+              color="inherit">
+              {i18n.t("Marketing")}
+            </ListSubheader>
                 <ListItemLink
               to="/tags"
               primary={i18n.t("mainDrawer.listItems.tags")}
