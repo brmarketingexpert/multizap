@@ -1,4 +1,5 @@
 import express from "express";
+import isAuth from "../middleware/isAuth";
 import tokenAuth from "../middleware/tokenAuth"; // Importação do middleware tokenAuth
 import * as ScheduleController from "../controllers/ScheduleController";
 
