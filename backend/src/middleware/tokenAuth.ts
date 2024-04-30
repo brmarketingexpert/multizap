@@ -20,7 +20,7 @@ const tokenAuth = async (req: Request, res: Response, next: NextFunction): Promi
       });
 
       if (lastTicket) {
-        req.params = {
+        req.user = {
           whatsappId: whatsapp.id.toString(),
           companyId: whatsapp.companyId.toString(), // Supondo que companyId esteja disponível no modelo Whatsapp
           lastTicketId: lastTicket.id.toString(),
