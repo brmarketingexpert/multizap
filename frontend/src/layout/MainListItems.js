@@ -276,16 +276,6 @@ const MainListItems = (props) => {
                 icon={<FlashOnIcon />}
               />
               <ListItemLink
-              to="/tags"
-              primary={i18n.t("mainDrawer.listItems.tags")}
-              icon={<LocalOfferIcon />}
-            />
-              <ListItemLink
-                to="/kanban"
-                primary="Kanban"
-                icon={<GolfCourseTwoToneIcon />}
-              />
-              <ListItemLink
                 to="/contacts"
                 primary={i18n.t("mainDrawer.listItems.contacts")}
                 icon={<ContactPhoneOutlinedIcon />}
@@ -323,11 +313,6 @@ const MainListItems = (props) => {
               to="/"
               primary="Dashboard"
               icon={<TrendingUpTwoToneIcon />}
-            />
-            <ListItemLink
-              to="/schedules"
-              primary={i18n.t("mainDrawer.listItems.schedules")}
-              icon={<EventIcon />}
             />
 
             {showCampaigns && (
@@ -426,11 +411,6 @@ const MainListItems = (props) => {
               to="/users"
               primary={i18n.t("mainDrawer.listItems.users")}
               icon={<PeopleAltOutlinedIcon />}
-            />
-            <ListItemLink
-              to="/prompts"
-              primary={i18n.t("mainDrawer.listItems.prompts")}
-              icon={<AllInclusiveTwoToneIcon />}
             />
             <ListItemLink
               to="/settings"
