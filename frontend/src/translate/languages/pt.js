@@ -366,7 +366,7 @@ const messages = {
           administration: "Ajustes",
           users: "Usuários",
           settings: "Preferências",
-          helps: "Videoaulas",
+          helps: "Funcionalidades",
           messagesAPI: "API",
           schedules: "Agendar Envio",
           campaigns: "Disparador",
