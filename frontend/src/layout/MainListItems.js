@@ -276,20 +276,6 @@ const MainListItems = (props) => {
                 icon={<FlashOnIcon />}
               />
               <ListItemLink
-              to="/queues"
-              primary={i18n.t("mainDrawer.listItems.queues")}
-              icon={<AccountTreeOutlinedIcon />}
-            />
-             <ListItemLink
-              to="/connections"
-              primary={i18n.t("mainDrawer.listItems.connections")}
-              icon={
-                <Badge badgeContent={connectionWarning ? "!" : 0} color="error">
-                  <PhonelinkRingTwoToneIcon />
-                </Badge>
-              }
-            />
-              <ListItemLink
                 to="/contacts"
                 primary={i18n.t("mainDrawer.listItems.contacts")}
                 icon={<ContactPhoneOutlinedIcon />}
@@ -320,7 +306,7 @@ const MainListItems = (props) => {
             <ListItemLink
               small
               to="/"
-              primary="Dashboard"
+              primary="Estatísticas"
               icon={<TrendingUpTwoToneIcon />}
             />
             <ListItemLink
@@ -439,6 +425,20 @@ const MainListItems = (props) => {
                 icon={<AnnouncementIcon />}
               />
             )}
+             <ListItemLink
+              to="/connections"
+              primary={i18n.t("mainDrawer.listItems.connections")}
+              icon={
+                <Badge badgeContent={connectionWarning ? "!" : 0} color="error">
+                  <PhonelinkRingTwoToneIcon />
+                </Badge>
+              }
+            />
+            <ListItemLink
+              to="/queues"
+              primary={i18n.t("mainDrawer.listItems.queues")}
+              icon={<AccountTreeOutlinedIcon />}
+            />
             <ListItemLink
               to="/users"
               primary={i18n.t("mainDrawer.listItems.users")}
