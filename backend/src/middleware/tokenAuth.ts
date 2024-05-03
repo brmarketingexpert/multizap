@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
+
 import AppError from "../errors/AppError";
 import Whatsapp from "../models/Whatsapp";
-import Ticket from "../models/Ticket"; // Importe o modelo de Ticket
 
 type HeaderParams = {
   Bearer: string;
@@ -11,26 +11,12 @@ const tokenAuth = async (req: Request, res: Response, next: NextFunction): Promi
   try {
     const token = req.headers.authorization.replace('Bearer ', '');
     const whatsapp = await Whatsapp.findOne({ where: { token } });
-
     if (whatsapp) {
-      // Recuperar o último ticketId associado a este Whatsapp
-      const lastTicket = await Ticket.findOne({
-        where: { whatsappId: whatsapp.id },
-        order: [['createdAt', 'DESC']] // Ordena pelos tickets mais recentes
-      });
-
-      if (lastTicket) {
-        req.user = {
-          whatsappId: whatsapp.id.toString(),
-          companyId: whatsapp.companyId.toString(), // Supondo que companyId esteja disponível no modelo Whatsapp
-          lastTicketId: lastTicket.id.toString(),
-          // Adicione outras chaves estrangeiras, se necessário
-        }
-      } else {
-        throw new Error("Não foi encontrado nenhum ticket associado a este Whatsapp.");
+      req.params = {
+        whatsappId: whatsapp.id.toString()
       }
     } else {
-      throw new Error("Whatsapp não encontrado.");
+      throw new Error();
     }
   } catch (err) {
     throw new AppError(
