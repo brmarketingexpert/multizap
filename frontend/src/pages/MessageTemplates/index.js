@@ -75,9 +75,9 @@ const fetchTemplates = async () => {
 
     // Criar uma lista de solicitações de modelo
     const templateRequests = [
-      api.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkin/{template_msgs_id}`, { headers, params: payload }),
-      api.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/feedback/{template_msgs_id}`, { headers, params: payload }),
-      api.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkout/{template_msgs_id}`, { headers, params: payload }),
+      xanoApi.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkin/{template_msgs_id}`, { headers, params: payload }),
+      xanoApi.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/feedback/{template_msgs_id}`, { headers, params: payload }),
+      xanoApi.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkout/{template_msgs_id}`, { headers, params: payload }),
     ];
 const [
         checkinResponse,
@@ -128,7 +128,7 @@ const [
         hoteis_id: `${companyId}`
       };
       // Envie uma solicitação PATCH para atualizar o template de feedback usando xanoApi
-      await xanoApi.patch(`/template_feedback/${companyId}`, payload); // Alteração aqui
+      await xanoApi.patch(`/template_feedback/{template_msgs_id}`, payload); // Alteração aqui
       // Se a solicitação for bem-sucedida, exibe uma mensagem de sucesso
       toast.success("Mensagem de feedback atualizada com sucesso!");
     } catch (err) {
