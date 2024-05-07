@@ -71,13 +71,13 @@ const fetchTemplates = async () => {
     const headers = { Authorization: `Bearer ${xanoToken}` };
     
     // Crie um objeto de payload para incluir companyId nas solicitações GET
-    const payload = { template_msgs_id: parseInt(companyId) };
+    const getPayload = { template_msgs_id: parseInt(companyId) };
 
     // Criar uma lista de solicitações de modelo
     const templateRequests = [
-      xanoApi.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkin/{template_msgs_id}`, { headers, params: payload }),
-      xanoApi.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/feedback/{template_msgs_id}`, { headers, params: payload }),
-      xanoApi.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkout/{template_msgs_id}`, { headers, params: payload }),
+      xanoApi.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkin/{template_msgs_id}`, { headers, getPayload }),
+      xanoApi.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/feedback/{template_msgs_id}`, { headers, getPayload }),
+      xanoApi.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkout/{template_msgs_id}`, { headers, getPayload }),
     ];
 const [
         checkinResponse,
@@ -102,14 +102,14 @@ const [
   const handleUpdateCheckinTemplate = async () => {
     try {
       // Construa o payload com o companyId, token_checkin e template_checkin fornecidos
-      const payload = {
+      const checkinPayload = {
         template_msgs_id: `${companyId}`,
         token_checkin: checkinToken,
         template_checkin: checkinTemplate,
         hoteis_id: `${companyId}`
       };
       // Envie uma solicitação PATCH para atualizar o template de checkin usando xanoApi
-      await xanoApi.patch(`/template_checkin/${companyId}`, payload); // Alteração aqui
+      await xanoApi.patch(`/template_checkin/${companyId}`, checkinPayload); // Alteração aqui
       // Se a solicitação for bem-sucedida, exibe uma mensagem de sucesso
       toast.success("Mensagem de checkin atualizada com sucesso!");
     } catch (err) {
@@ -121,14 +121,14 @@ const [
   const handleUpdateFeedbackTemplate = async () => {
     try {
       // Construa o payload com o companyId e o template fornecido
-      const payload = {
+      const feedbackPayload = {
         template_msgs_id: `${companyId}`,
         token_feedback: feedbackToken,
         template_feedback: feedbackTemplate,
         hoteis_id: `${companyId}`
       };
       // Envie uma solicitação PATCH para atualizar o template de feedback usando xanoApi
-      await xanoApi.patch(`/template_feedback/{template_msgs_id}`, payload); // Alteração aqui
+      await xanoApi.patch(`/template_feedback/{template_msgs_id}`, feedbackPayload); // Alteração aqui
       // Se a solicitação for bem-sucedida, exibe uma mensagem de sucesso
       toast.success("Mensagem de feedback atualizada com sucesso!");
     } catch (err) {
@@ -140,14 +140,14 @@ const [
   const handleUpdateCheckoutTemplate = async () => {
     try {
       // Construa o payload com o companyId e o template fornecido
-      const payload = {
+      const checkoutPayload = {
         template_msgs_id: `${companyId}`,
         token_checkout: checkoutToken,
         template_checkout: checkoutTemplate,
         hoteis_id: `${companyId}`
       };
       // Envie uma solicitação PATCH para atualizar o template de checkout usando xanoApi
-      await xanoApi.patch(`/template_checkout/${companyId}`, payload); // Alteração aqui
+      await xanoApi.patch(`/template_checkout/${companyId}`, checkoutPayload); // Alteração aqui
       // Se a solicitação for bem-sucedida, exibe uma mensagem de sucesso
       toast.success("Mensagem de checkout atualizada com sucesso!");
     } catch (err) {
