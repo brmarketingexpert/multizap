@@ -264,44 +264,4 @@ const [
   );
 };
 
-export default MessageTemplates;
-Fiz as alterações necessárias nas chamadas da API para incluir corretamente os valores de companyId nas URLs das solicitações GET e PATCH. Também atualizei os comentários para refletir as mudanças feitas no código.
-
-User
-ta quase perfeito, vc só esqueceu do payload do get, lembra? corrija
-
-const fetchTemplates = async () => {
-  try {
-    // Obtenha o token do Xano do ambiente
-    const xanoToken = process.env.XANO_TOKEN;
-    const headers = { Authorization: `Bearer ${xanoToken}` };
-    
-    // Crie um objeto de payload para incluir companyId nas solicitações GET
-    const payload = { template_msgs_id: companyId };
-
-    // Criar uma lista de solicitações de modelo
-    const templateRequests = [
-      api.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkin/{template_msgs_id}`, { headers, params: payload }),
-      api.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/feedback/{template_msgs_id}`, { headers, params: payload }),
-      api.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkout/{template_msgs_id}`, { headers, params: payload }),
-    ];
-ChatGPT
-Aqui está o trecho de código corrigido, incluindo o payload nas solicitações GET:
-
-javascript
-Copy code
-const fetchTemplates = async () => {
-  try {
-    // Obtenha o token do Xano do ambiente
-    const xanoToken = process.env.XANO_TOKEN;
-    const headers = { Authorization: `Bearer ${xanoToken}` };
-    
-    // Crie um objeto de payload para incluir companyId nas solicitações GET
-    const payload = { template_msgs_id: companyId };
-
-    // Criar uma lista de solicitações de modelo
-    const templateRequests = [
-      api.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkin/{template_msgs_id}`, { headers, params: payload }),
-      api.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/feedback/{template_msgs_id}`, { headers, params: payload }),
-      api.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkout/{template_msgs_id}`, { headers, params: payload }),
-    ];
+export default MessageTemplat
