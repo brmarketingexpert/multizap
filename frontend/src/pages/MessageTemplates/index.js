@@ -3,7 +3,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import Grid from "@material-ui/core/Grid";
 import { toast } from "react-toastify";
 
@@ -12,6 +11,7 @@ import MainHeader from "../../components/MainHeader";
 import Title from "../../components/Title";
 
 import api from "../../services/api";
+import socketConnection from "../../services/socketConnection";
 
 const useStyles = makeStyles((theme) => ({
   mainPaper: {
@@ -38,18 +38,27 @@ const MessageTemplates = () => {
   const [checkoutTemplate, setCheckoutTemplate] = useState("");
 
   useEffect(() => {
-    const fetchCompanyId = async () => {
-      try {
-        const response = await api.get("/auth/login");
-        const { user } = response.data;
-        setCompanyId(user.companyId);
-      } catch (error) {
-        console.error("Failed to fetch companyId:", error);
-      }
-    };
+    const storedCompanyId = localStorage.getItem("companyId");
+    setCompanyId(storedCompanyId);
 
-    fetchCompanyId();
+    const socket = socketConnection({ companyId: storedCompanyId });
+
+    socket.on(`company-${storedCompanyId}-settings`, (data) => {
+      if (data.action === "update") {
+        // Handle settings update if needed
+      }
+    });
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
+
+  useEffect(() => {
+    if (companyId) {
+      fetchTemplates();
+    }
+  }, [companyId]);
 
   const fetchTemplates = async () => {
     try {
