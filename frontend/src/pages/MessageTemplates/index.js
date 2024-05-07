@@ -32,45 +32,51 @@ const useStyles = makeStyles((theme) => ({
 
 const MessageTemplates = () => {
   const classes = useStyles();
+  const [companyId, setCompanyId] = useState(null);
   const [checkinTemplate, setCheckinTemplate] = useState("");
   const [feedbackTemplate, setFeedbackTemplate] = useState("");
   const [checkoutTemplate, setCheckoutTemplate] = useState("");
 
-  // Função executada ao carregar a página para buscar os modelos de mensagem
   useEffect(() => {
-    fetchTemplates();
+    const fetchCompanyId = async () => {
+      try {
+        const response = await api.get("/auth/login");
+        const { user } = response.data;
+        setCompanyId(user.companyId);
+      } catch (error) {
+        console.error("Failed to fetch companyId:", error);
+      }
+    };
+
+    fetchCompanyId();
   }, []);
 
-  // Função para buscar os modelos de mensagem nos endpoints correspondentes
   const fetchTemplates = async () => {
     try {
-      // Busca dos modelos de mensagem nos endpoints corretos do Xano
-      const [checkinResponse, feedbackResponse, checkoutResponse] = await Promise.all([
-        api.get("https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkin/{template_msgs_id}"),
-        api.get("https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/feedback/{template_msgs_id}"),
-        api.get("https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkout/{template_msgs_id}"),
+      const [
+        checkinResponse,
+        feedbackResponse,
+        checkoutResponse,
+      ] = await Promise.all([
+        api.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkin/${companyId}`),
+        api.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/feedback/${companyId}`),
+        api.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkout/${companyId}`),
       ]);
 
-      // Atualização dos estados com os modelos de mensagem obtidos
       setCheckinTemplate(checkinResponse.data.template);
       setFeedbackTemplate(feedbackResponse.data.template);
       setCheckoutTemplate(checkoutResponse.data.template);
     } catch (err) {
-      // Tratamento de erro em caso de falha ao buscar os modelos de mensagem
-      toast.error("Failed to fetch message templates");
+      toast.error("Falha ao carregar os modelos de mensagens");
     }
   };
 
-  // Função para atualizar o modelo de mensagem no servidor
   const handleUpdateTemplate = async (endpoint, template) => {
     try {
-      // Requisição PATCH para o endpoint correspondente com o novo modelo de mensagem
       await api.patch(endpoint, { template });
-      // Notificação de sucesso após atualização
-      toast.success("Template updated successfully");
+      toast.success("Mensagem atualizada com sucesso!");
     } catch (err) {
-      // Tratamento de erro em caso de falha ao atualizar o modelo de mensagem
-      toast.error("Failed to update template");
+      toast.error("Falha ao atualizar mensagem");
     }
   };
 
@@ -104,12 +110,18 @@ const MessageTemplates = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => handleUpdateTemplate("https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_checkin/{template_msgs_id}", checkinTemplate)}
+                onClick={() =>
+                  handleUpdateTemplate(
+                    `https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_checkin/${companyId}`,
+                    checkinTemplate
+                  )
+                }
               >
                 Atualizar
               </Button>
             </div>
           </Grid>
+          {/* Feedback Template */}
           <Grid item>
             <div className={classes.messageContainer}>
               <TextField
@@ -133,12 +145,18 @@ const MessageTemplates = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => handleUpdateTemplate("https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_feedback/{template_msgs_id}", feedbackTemplate)}
+                onClick={() =>
+                  handleUpdateTemplate(
+                    `https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_feedback/${companyId}`,
+                    feedbackTemplate
+                  )
+                }
               >
                 Atualizar
               </Button>
             </div>
           </Grid>
+          {/* Checkout Template */}
           <Grid item>
             <div className={classes.messageContainer}>
               <TextField
@@ -162,7 +180,12 @@ const MessageTemplates = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => handleUpdateTemplate("https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_checkout/{template_msgs_id}", checkoutTemplate)}
+                onClick={() =>
+                  handleUpdateTemplate(
+                    `https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_checkout/${companyId}`,
+                    checkoutTemplate
+                  )
+                }
               >
                 Atualizar
               </Button>
