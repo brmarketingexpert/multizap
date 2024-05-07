@@ -264,4 +264,4 @@ const [
   );
 };
 
-export default MessageTemplat
+export default MessageTemplates;
