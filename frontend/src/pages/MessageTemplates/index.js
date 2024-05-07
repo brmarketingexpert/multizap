@@ -62,15 +62,19 @@ const MessageTemplates = () => {
 
   const fetchTemplates = async () => {
     try {
+      const xanoToken = process.env.XANO_TOKEN;
+      const headers = { Authorization: `Bearer ${xanoToken}` };
+      const templateRequests = [
+        api.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkin/{template_msgs_id}`, { headers }),
+        api.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/feedback/{template_msgs_id}`, { headers }),
+        api.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkout/{template_msgs_id}`, { headers }),
+      ];
+
       const [
         checkinResponse,
         feedbackResponse,
         checkoutResponse,
-      ] = await Promise.all([
-        api.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkin/${companyId}`),
-        api.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/feedback/${companyId}`),
-        api.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkout/${companyId}`),
-      ]);
+      ] = await Promise.all(templateRequests);
 
       setCheckinTemplate(checkinResponse.data.template);
       setFeedbackTemplate(feedbackResponse.data.template);
@@ -82,7 +86,10 @@ const MessageTemplates = () => {
 
   const handleUpdateTemplate = async (endpoint, template) => {
     try {
-      await api.patch(endpoint, { template });
+      const xanoToken = process.env.XANO_TOKEN;
+      const headers = { Authorization: `Bearer ${xanoToken}` };
+      const payload = { template_msgs_id: companyId, template };
+      await api.patch(endpoint, payload, { headers });
       toast.success("Mensagem atualizada com sucesso!");
     } catch (err) {
       toast.error("Falha ao atualizar mensagem");
@@ -121,7 +128,7 @@ const MessageTemplates = () => {
                 color="primary"
                 onClick={() =>
                   handleUpdateTemplate(
-                    `https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_checkin/${companyId}`,
+                    `https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_checkin/{template_msgs_id}`,
                     checkinTemplate
                   )
                 }
@@ -156,7 +163,7 @@ const MessageTemplates = () => {
                 color="primary"
                 onClick={() =>
                   handleUpdateTemplate(
-                    `https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_feedback/${companyId}`,
+                    `https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_feedback/{template_msgs_id}`,
                     feedbackTemplate
                   )
                 }
@@ -191,7 +198,7 @@ const MessageTemplates = () => {
                 color="primary"
                 onClick={() =>
                   handleUpdateTemplate(
-                    `https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_checkout/${companyId}`,
+                    `https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_checkout/{template_msgs_id}`,
                     checkoutTemplate
                   )
                 }
