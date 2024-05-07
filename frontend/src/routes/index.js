@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
+// Importando os componentes das rotas
 import LoggedInLayout from "../layout";
 import Dashboard from "../pages/Dashboard/";
 import TicketResponsiveContainer from "../pages/TicketResponsiveContainer";
@@ -18,7 +19,6 @@ import MessagesAPI from "../pages/MessagesAPI/";
 import Helps from "../pages/Helps/";
 import ContactLists from "../pages/ContactLists/";
 import ContactListItems from "../pages/ContactListItems/";
-// import Companies from "../pages/Companies/";
 import QuickMessages from "../pages/QuickMessages/";
 import Kanban from "../pages/Kanban";
 import { AuthProvider } from "../context/Auth/AuthContext";
@@ -35,12 +35,13 @@ import ToDoList from "../pages/ToDoList/";
 import Subscription from "../pages/Subscription/";
 import Files from "../pages/Files/";
 import Prompts from "../pages/Prompts";
-import MessageTemplates from "../pages/MessageTemplates"; // Importação do componente MessageTemplates
+import MessageTemplates from "../pages/MessageTemplates"; // Importando o componente MessageTemplates
 
 const Routes = () => {
   const [showCampaigns, setShowCampaigns] = useState(false);
 
   useEffect(() => {
+    // Verifica se a flag 'cshow' está presente no armazenamento local
     const cshow = localStorage.getItem("cshow");
     if (cshow !== undefined) {
       setShowCampaigns(true);
@@ -52,125 +53,48 @@ const Routes = () => {
       <AuthProvider>
         <TicketsContextProvider>
           <Switch>
+            {/* Definição das rotas */}
             <Route exact path="/login" component={Login} />
             <Route exact path="/signup" component={Signup} />
-            <Route exact path="/message-templates" component={MessageTemplates} /> {/* Caminho adicionado para o componente MessageTemplates */}
-            {/* <Route exact path="/create-company" component={Companies} /> */}
+            {/* Adicionando a rota para o componente MessageTemplates */}
+            <Route exact path="/message-templates" component={MessageTemplates} />
+            {/* Rotas privadas protegidas pelo contexto de autenticação */}
             <WhatsAppsProvider>
               <LoggedInLayout>
                 <Route exact path="/" component={Dashboard} isPrivate />
-                <Route
-                  exact
-                  path="/tickets/:ticketId?"
-                  component={TicketResponsiveContainer}
-                  isPrivate
-                />
-                <Route
-                  exact
-                  path="/connections"
-                  component={Connections}
-                  isPrivate
-                />
-                <Route
-                  exact
-                  path="/quick-messages"
-                  component={QuickMessages}
-                  isPrivate
-                />
-                <Route
-                  exact
-                  path="/todolist"
-                  component={ToDoList}
-                  isPrivate
-                  />
-                <Route
-                  exact
-                  path="/schedules"
-                  component={Schedules}
-                  isPrivate
-                />
+                <Route exact path="/tickets/:ticketId?" component={TicketResponsiveContainer} isPrivate />
+                <Route exact path="/connections" component={Connections} isPrivate />
+                <Route exact path="/quick-messages" component={QuickMessages} isPrivate />
+                <Route exact path="/todolist" component={ToDoList} isPrivate />
+                <Route exact path="/schedules" component={Schedules} isPrivate />
                 <Route exact path="/tags" component={Tags} isPrivate />
                 <Route exact path="/contacts" component={Contacts} isPrivate />
                 <Route exact path="/helps" component={Helps} isPrivate />
                 <Route exact path="/users" component={Users} isPrivate />
                 <Route exact path="/files" component={Files} isPrivate />
                 <Route exact path="/prompts" component={Prompts} isPrivate />
-
-                <Route
-                  exact
-                  path="/messages-api"
-                  component={MessagesAPI}
-                  isPrivate
-                />
-                <Route
-                  exact
-                  path="/settings"
-                  component={SettingsCustom}
-                  isPrivate
-                />
-				        <Route 
-                  exact
-                  path="/kanban"
-                  component={Kanban}
-                  isPrivate
-                />
-                <Route
-                  exact
-                  path="/financeiro"
-                  component={Financeiro}
-                  isPrivate
-                />
+                <Route exact path="/messages-api" component={MessagesAPI} isPrivate />
+                <Route exact path="/settings" component={SettingsCustom} isPrivate />
+                <Route exact path="/kanban" component={Kanban} isPrivate />
+                <Route exact path="/financeiro" component={Financeiro} isPrivate />
                 <Route exact path="/queues" component={Queues} isPrivate />
-                <Route
-                  exact
-                  path="/announcements"
-                  component={Annoucements}
-                  isPrivate
-                />
-                <Route
-                  exact
-                  path="/subscription"
-                  component={Subscription}
-                  isPrivate
-                />
+                <Route exact path="/announcements" component={Annoucements} isPrivate />
+                <Route exact path="/subscription" component={Subscription} isPrivate />
                 <Route exact path="/chats/:id?" component={Chat} isPrivate />
+                {/* Renderização condicional das rotas relacionadas a campanhas */}
                 {showCampaigns && (
                   <>
-                    <Route
-                      exact
-                      path="/contact-lists"
-                      component={ContactLists}
-                      isPrivate
-                    />
-                    <Route
-                      exact
-                      path="/contact-lists/:contactListId/contacts"
-                      component={ContactListItems}
-                      isPrivate
-                    />
-                    <Route
-                      exact
-                      path="/campaigns"
-                      component={Campaigns}
-                      isPrivate
-                    />
-                    <Route
-                      exact
-                      path="/campaign/:campaignId/report"
-                      component={CampaignReport}
-                      isPrivate
-                    />
-                    <Route
-                      exact
-                      path="/campaigns-config"
-                      component={CampaignsConfig}
-                      isPrivate
-                    />
+                    <Route exact path="/contact-lists" component={ContactLists} isPrivate />
+                    <Route exact path="/contact-lists/:contactListId/contacts" component={ContactListItems} isPrivate />
+                    <Route exact path="/campaigns" component={Campaigns} isPrivate />
+                    <Route exact path="/campaign/:campaignId/report" component={CampaignReport} isPrivate />
+                    <Route exact path="/campaigns-config" component={CampaignsConfig} isPrivate />
                   </>
                 )}
               </LoggedInLayout>
             </WhatsAppsProvider>
           </Switch>
+          {/* Container para exibir notificações */}
           <ToastContainer autoClose={3000} />
         </TicketsContextProvider>
       </AuthProvider>
