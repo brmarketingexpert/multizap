@@ -35,6 +35,7 @@ import ToDoList from "../pages/ToDoList/";
 import Subscription from "../pages/Subscription/";
 import Files from "../pages/Files/";
 import Prompts from "../pages/Prompts";
+import MessageTemplates from "../pages/MessageTemplates"; // Importação do componente MessageTemplates
 
 const Routes = () => {
   const [showCampaigns, setShowCampaigns] = useState(false);
@@ -53,6 +54,7 @@ const Routes = () => {
           <Switch>
             <Route exact path="/login" component={Login} />
             <Route exact path="/signup" component={Signup} />
+            <Route exact path="/message-templates" component={MessageTemplates} /> {/* Caminho adicionado para o componente MessageTemplates */}
             {/* <Route exact path="/create-company" component={Companies} /> */}
             <WhatsAppsProvider>
               <LoggedInLayout>
