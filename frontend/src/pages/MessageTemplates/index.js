@@ -36,6 +36,7 @@ const MessageTemplates = () => {
   const [checkinTemplate, setCheckinTemplate] = useState("");
   const [feedbackTemplate, setFeedbackTemplate] = useState("");
   const [checkoutTemplate, setCheckoutTemplate] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const storedCompanyId = localStorage.getItem("companyId");
@@ -81,6 +82,8 @@ const MessageTemplates = () => {
       setCheckoutTemplate(checkoutResponse.data.template);
     } catch (err) {
       toast.error("Falha ao carregar os modelos de mensagens");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -95,6 +98,10 @@ const MessageTemplates = () => {
       toast.error("Falha ao atualizar mensagem");
     }
   };
+
+  if (loading) {
+    return <div>Carregando...</div>;
+  }
 
   return (
     <MainContainer>
