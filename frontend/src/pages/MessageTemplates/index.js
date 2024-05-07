@@ -71,7 +71,7 @@ const fetchTemplates = async () => {
     const headers = { Authorization: `Bearer ${xanoToken}` };
     
     // Crie um objeto de payload para incluir companyId nas solicitações GET
-    const payload = { template_msgs_id: companyId };
+    const payload = { template_msgs_id: parseInt(companyId) };
 
     // Criar uma lista de solicitações de modelo
     const templateRequests = [
