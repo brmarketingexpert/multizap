@@ -1,26 +1,26 @@
+// frontend/src/pages/MessageTemplates/index.js
+
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography"; // Importação do componente Typography
 import { toast } from "react-toastify";
 
 import MainContainer from "../../components/MainContainer";
 import MainHeader from "../../components/MainHeader";
 import Title from "../../components/Title";
 
-import api from "../../services/api";
+import { xanoApi } from "../../services/api"; // Importar xanoApi em vez de api
 import { socketConnection } from "../../services/socket";
 
-// Estilos CSS customizados
 const useStyles = makeStyles((theme) => ({
   mainPaper: {
     flex: 1,
     padding: theme.spacing(1),
     overflowY: "scroll",
-    ...theme.scrollbarStyles, // Estilos personalizados para scrollbars
+    ...theme.scrollbarStyles,
   },
   messageContainer: {
     marginBottom: theme.spacing(2),
@@ -30,19 +30,18 @@ const useStyles = makeStyles((theme) => ({
   textField: {
     marginBottom: theme.spacing(2),
   },
-  errorMessage: {
-    marginTop: theme.spacing(2), // Adicionando margem superior para separar da seção anterior
-  },
 }));
 
 const MessageTemplates = () => {
   const classes = useStyles();
   const [companyId, setCompanyId] = useState(null);
+  const [checkinToken, setCheckinToken] = useState("");
+  const [feedbackToken, setFeedbackToken] = useState("");
+  const [checkoutToken, setCheckoutToken] = useState("");
   const [checkinTemplate, setCheckinTemplate] = useState("");
   const [feedbackTemplate, setFeedbackTemplate] = useState("");
   const [checkoutTemplate, setCheckoutTemplate] = useState("");
-  const [loading, setLoading] = useState(true); // Estado para controlar o carregamento dos dados
-  const [error, setError] = useState(false); // Estado para controlar se ocorreu um erro na carga dos dados
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const storedCompanyId = localStorage.getItem("companyId");
@@ -50,36 +49,30 @@ const MessageTemplates = () => {
 
     const socket = socketConnection({ companyId: storedCompanyId });
 
-    // Subscreve-se a alterações nos ajustes da empresa via socket
     socket.on(`company-${storedCompanyId}-settings`, (data) => {
       if (data.action === "update") {
-        // Lida com a atualização de ajustes, se necessário
+        // Handle settings update if needed
       }
     });
 
     return () => {
-      socket.disconnect(); // Desconecta o socket quando o componente é desmontado
+      socket.disconnect();
     };
   }, []);
 
   useEffect(() => {
     if (companyId) {
       fetchTemplates();
-    } else {
-      setLoading(false); // Define o estado de carregamento como concluído para exibir a mensagem de erro
     }
   }, [companyId]);
 
-  // Função para buscar os templates de mensagens
   const fetchTemplates = async () => {
     try {
-      const xanoToken = process.env.XANO_TOKEN; // Obtém o token de acesso do ambiente
-      const headers = { Authorization: `Bearer ${xanoToken}` }; // Cabeçalho de autorização
+      // Criar uma lista de solicitações de modelo usando xanoApi
       const templateRequests = [
-        // Requisições assíncronas para obter os templates
-        api.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkin?template_msgs_id=${companyId}`, { headers }),
-        api.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/feedback?template_msgs_id=${companyId}`, { headers }),
-        api.get(`https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_msgs/checkout?template_msgs_id=${companyId}`, { headers }),
+        xanoApi.get(`/template_msgs/checkin/{template_msgs_id}`),
+        xanoApi.get(`/template_msgs/feedback/{template_msgs_id}`),
+        xanoApi.get(`/template_msgs/checkout/{template_msgs_id}`),
       ];
 
       const [
@@ -88,50 +81,82 @@ const MessageTemplates = () => {
         checkoutResponse,
       ] = await Promise.all(templateRequests);
 
-      // Atualiza os estados com os templates obtidos
+      // Define os templates nos estados
+      setCheckinToken(checkinResponse.data.token);
       setCheckinTemplate(checkinResponse.data.template);
+      setFeedbackToken(feedbackResponse.data.token);
       setFeedbackTemplate(feedbackResponse.data.template);
+      setCheckoutToken(checkoutResponse.data.token);
       setCheckoutTemplate(checkoutResponse.data.template);
     } catch (err) {
-      // Trata os erros durante a requisição
-      setError(true); // Define o estado de erro como verdadeiro
-      toast.error("Não foi possível sincronizar as mensagens. Entre em contato com o suporte.");
-    } finally {
-      setLoading(false); // Define o estado de carregamento como concluído
+      // Se houver um erro ao buscar os templates, exibe uma mensagem de erro e define o estado de carregamento como falso
+      toast.error("A integração com os modelos falhou. Entre em contato com o suporte.");
+      setLoading(false);
     }
   };
 
-  // Função para atualizar um template
-  const handleUpdateTemplate = async (endpoint, template) => {
+  const handleUpdateCheckinTemplate = async () => {
     try {
-      const xanoToken = process.env.XANO_TOKEN; // Obtém o token de acesso do ambiente
-      const headers = { Authorization: `Bearer ${xanoToken}` }; // Cabeçalho de autorização
-      const payload = { template_msgs_id: companyId, template }; // Payload da requisição
-      await api.patch(endpoint, payload, { headers }); // Requisição PATCH para atualizar o template
-      toast.success("Mensagem atualizada com sucesso!"); // Exibe mensagem de sucesso
+      // Construa o payload com o companyId, token_checkin e template_checkin fornecidos
+      const payload = {
+        template_msgs_id: `${companyId}`,
+        token_checkin: checkinToken,
+        template_checkin: checkinTemplate,
+        hoteis_id: `${companyId}`
+      };
+      // Envie uma solicitação PATCH para atualizar o template de checkin usando xanoApi
+      await xanoApi.patch(`/template_checkin/{template_msgs_id}`, payload);
+      // Se a solicitação for bem-sucedida, exibe uma mensagem de sucesso
+      toast.success("Mensagem de checkin atualizada com sucesso!");
     } catch (err) {
-      // Trata os erros durante a requisição
-      toast.error("Falha ao atualizar mensagem"); // Exibe mensagem de erro
+      // Se houver um erro ao atualizar o template de checkin, exibe uma mensagem de erro
+      toast.error("Falha ao atualizar mensagem de checkin");
     }
   };
 
-  // Se houver um erro na carga dos templates, exibe uma mensagem de erro na página
-  if (error) {
-    return (
-      <MainContainer>
-        <Typography variant="h6" color="error" className={classes.errorMessage}>
-          Não foi possível carregar os templates. Entre em contato com o suporte.
-        </Typography>
-      </MainContainer>
-    );
-  }
+  const handleUpdateFeedbackTemplate = async () => {
+    try {
+      // Construa o payload com o companyId e o template fornecido
+      const payload = {
+        template_msgs_id: `${companyId}`,
+        token_feedback: feedbackToken,
+        template_feedback: feedbackTemplate,
+        hoteis_id: `${companyId}`
+      };
+      // Envie uma solicitação PATCH para atualizar o template de feedback usando xanoApi
+      await xanoApi.patch(`/template_feedback/{template_msgs_id}`, payload);
+      // Se a solicitação for bem-sucedida, exibe uma mensagem de sucesso
+      toast.success("Mensagem de feedback atualizada com sucesso!");
+    } catch (err) {
+      // Se houver um erro ao atualizar o template de feedback, exibe uma mensagem de erro
+      toast.error("Falha ao atualizar mensagem de feedback");
+    }
+  };
 
-  // Se estiver carregando os templates, exibe uma mensagem de carregamento na página
+  const handleUpdateCheckoutTemplate = async () => {
+    try {
+      // Construa o payload com o companyId e o template fornecido
+      const payload = {
+        template_msgs_id: `${companyId}`,
+        token_checkout: checkoutToken,
+        template_checkout: checkoutTemplate,
+        hoteis_id: `${companyId}`
+      };
+      // Envie uma solicitação PATCH para atualizar o template de checkout usando xanoApi
+      await xanoApi.patch(`/template_checkout/{template_msgs_id}`, payload);
+      // Se a solicitação for bem-sucedida, exibe uma mensagem de sucesso
+      toast.success("Mensagem de checkout atualizada com sucesso!");
+    } catch (err) {
+      // Se houver um erro ao atualizar o template de checkout, exibe uma mensagem de erro
+      toast.error("Falha ao atualizar mensagem de checkout");
+    }
+  };
+
   if (loading) {
+    // Se os templates ainda estiverem sendo carregados, exibe uma mensagem de carregamento
     return <div>Carregando...</div>;
   }
 
-  // Se não houver erro e os templates foram carregados, exibe os campos de templates na página
   return (
     <MainContainer>
       <MainHeader>
@@ -139,6 +164,7 @@ const MessageTemplates = () => {
       </MainHeader>
       <Paper className={classes.mainPaper} variant="outlined">
         <Grid container direction="column" spacing={3}>
+          {/* Template de Checkin */}
           <Grid item>
             <div className={classes.messageContainer}>
               <TextField
@@ -146,13 +172,13 @@ const MessageTemplates = () => {
                 fullWidth
                 label="Token do chip"
                 variant="outlined"
-                value={checkinTemplate}
-                onChange={(e) => setCheckinTemplate(e.target.value)}
+                value={checkinToken}
+                onChange={(e) => setCheckinToken(e.target.value)}
               />
               <TextField
                 className={classes.textField}
                 fullWidth
-                label="Mensagem de Boas Vindas"
+                label="Mensagem de Checkin"
                 variant="outlined"
                 multiline
                 rows={4}
@@ -162,18 +188,13 @@ const MessageTemplates = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() =>
-                  handleUpdateTemplate(
-                    `https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_checkin/{template_msgs_id}`,
-                    checkinTemplate
-                  )
-                }
+                onClick={handleUpdateCheckinTemplate}
               >
                 Atualizar
               </Button>
             </div>
           </Grid>
-          {/* Seção de template de Feedback */}
+          {/* Template de Feedback */}
           <Grid item>
             <div className={classes.messageContainer}>
               <TextField
@@ -181,13 +202,13 @@ const MessageTemplates = () => {
                 fullWidth
                 label="Token do chip"
                 variant="outlined"
-                value={feedbackTemplate}
-                onChange={(e) => setFeedbackTemplate(e.target.value)}
+                value={feedbackToken}
+                onChange={(e) => setFeedbackToken(e.target.value)}
               />
               <TextField
                 className={classes.textField}
                 fullWidth
-                label="Feedback Inicial"
+                label="Mensagem de Feedback"
                 variant="outlined"
                 multiline
                 rows={4}
@@ -197,18 +218,13 @@ const MessageTemplates = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() =>
-                  handleUpdateTemplate(
-                    `https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_feedback/{template_msgs_id}`,
-                    feedbackTemplate
-                  )
-                }
+                onClick={handleUpdateFeedbackTemplate}
               >
                 Atualizar
               </Button>
             </div>
           </Grid>
-          {/* Seção de template de Checkout */}
+          {/* Template de Checkout */}
           <Grid item>
             <div className={classes.messageContainer}>
               <TextField
@@ -216,13 +232,13 @@ const MessageTemplates = () => {
                 fullWidth
                 label="Token do chip"
                 variant="outlined"
-                value={checkoutTemplate}
-                onChange={(e) => setCheckoutTemplate(e.target.value)}
+                value={checkoutToken}
+                onChange={(e) => setCheckoutToken(e.target.value)}
               />
               <TextField
                 className={classes.textField}
                 fullWidth
-                label="Satisfação no Checkout"
+                label="Mensagem de Checkout"
                 variant="outlined"
                 multiline
                 rows={4}
@@ -232,12 +248,7 @@ const MessageTemplates = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() =>
-                  handleUpdateTemplate(
-                    `https://x8ki-letl-twmt.n7.xano.io/api:LP1Qco7D/template_checkout/{template_msgs_id}`,
-                    checkoutTemplate
-                  )
-                }
+                onClick={handleUpdateCheckoutTemplate}
               >
                 Atualizar
               </Button>
