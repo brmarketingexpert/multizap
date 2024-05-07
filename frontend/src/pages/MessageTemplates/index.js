@@ -11,7 +11,7 @@ import MainHeader from "../../components/MainHeader";
 import Title from "../../components/Title";
 
 import api from "../../services/api";
-import socketConnection from "../../services/socketConnection";
+import { socketConnection } from "../../services/socket";
 
 const useStyles = makeStyles((theme) => ({
   mainPaper: {
