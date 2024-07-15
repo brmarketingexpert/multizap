@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
 		width: "100vw",
 		height: "100vh",
 		background: "linear-gradient(to right, #0000FF , #0000CD , #00008B)",
-		backgroundImage: "url(https://image.cdn2.seaart.ai/2023-11-02/21611743093463045/c51e38d423705cde7fe528d758b82f61b190146f_high.webp)",
+		backgroundImage: "url(https://i.ibb.co/gy1Ch62/ramadan-background-with-mosque-illuminated-with-candles.jpg)",
 		backgroundRepeat: "round",
 		backgroundSize: "auto 100%",
 		backgroundPosition: "center",
